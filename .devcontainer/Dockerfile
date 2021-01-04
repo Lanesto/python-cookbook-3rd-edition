@@ -10,4 +10,6 @@ RUN pip install --no-cache-dir \
         # IPython and its extensions
         jupyter \
         pycodestyle_magic \
-        mypy-ipython
+        mypy-ipython \
+        # Other packages
+        numpy
