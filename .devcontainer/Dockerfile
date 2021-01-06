@@ -6,6 +6,7 @@ RUN pip install --no-cache-dir \
         pylint \
         pydocstyle \
         mypy \
+        nbqa \
         # IPython and its extensions
         jupyter \
         pycodestyle_magic \
