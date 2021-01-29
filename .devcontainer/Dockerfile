@@ -1,15 +1,5 @@
 FROM python:3.9
 
-# Install python requirements
-RUN pip install --no-cache-dir \
-        flake8 \
-        pylint \
-        pydocstyle \
-        mypy \
-        nbqa \
-        # IPython and its extensions
-        jupyter \
-        pycodestyle_magic \
-        mypy-ipython \
-        # Other packages
-        numpy
+COPY .devcontainer/requirements.txt /etc/
+RUN pip install --upgrade pip && \
+    pip install --no-cache-dir -r /etc/requirements.txt

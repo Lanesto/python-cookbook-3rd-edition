@@ -4,13 +4,12 @@
 		"context": "..",
 		"dockerfile": "Dockerfile",
 	},
-
     "workspaceMount": "source=${localWorkspaceFolder},target=/workspace,type=bind,consistency=delegated",
     "workspaceFolder": "/workspace",
-
 	"settings": {
 		"files.eol": "\n",
 		"terminal.integrated.shell.linux": null,
+		"editor.formatOnSave": true,
 		"python.pythonPath": "/usr/local/bin/python",
 		"python.linting.enabled": true,
 		"python.linting.flake8Enabled": true,
@@ -22,13 +21,16 @@
 			"--follow-imports=silent",
 			"--show-column-numbers"
 		],
+		"python.formatting.provider": "black",
+		"python.formatting.blackArgs": [
+			"--line-length=80",
+		],
+		"jupyter.alwaysTrustNotebooks": true,
 	},
-
 	"extensions": [
 		"ms-python.python",
 		"ms-toolsai.jupyter",
 		"donjayamanne.python-extension-pack",
-		"ms-python.vscode-pylance"
+		"ms-python.vscode-pylance",
 	],
-
 }

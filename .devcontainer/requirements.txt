@@ -1,0 +1,15 @@
+# Code review
+flake8
+pylint
+pydocstyle
+black
+mypy
+nbqa
+
+# Jupyter
+jupyter
+pycodestyle_magic
+mypy-ipython
+
+# Globally used libs
+numpy
