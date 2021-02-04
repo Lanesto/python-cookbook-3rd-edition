@@ -4,8 +4,8 @@
 		"context": "..",
 		"dockerfile": "Dockerfile",
 	},
-    "workspaceMount": "source=${localWorkspaceFolder},target=/workspace,type=bind,consistency=delegated",
-    "workspaceFolder": "/workspace",
+	"workspaceMount": "source=${localWorkspaceFolder},target=/workspace,type=bind,consistency=delegated",
+	"workspaceFolder": "/workspace",
 	"settings": {
 		"files.eol": "\n",
 		"terminal.integrated.shell.linux": null,
@@ -15,12 +15,6 @@
 		"python.linting.flake8Enabled": true,
 		"python.linting.pylintEnabled": true,
 		"python.linting.pydocstyleEnabled": true,
-		"python.linting.mypyEnabled": true,
-		"python.linting.mypyArgs": [
-			"--ignore-missing-imports",
-			"--follow-imports=silent",
-			"--show-column-numbers"
-		],
 		"python.formatting.provider": "black",
 		"python.formatting.blackArgs": [
 			"--line-length=80",
