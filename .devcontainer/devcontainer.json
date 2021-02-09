@@ -23,11 +23,18 @@
 			"--line-length=80",
 		],
 		"jupyter.alwaysTrustNotebooks": true,
+		"C_Cpp.default.includePath": [
+			"/usr/include/**",
+			"/usr/local/include/**",
+			"/workspace/**"
+		]
 	},
 	"extensions": [
 		"ms-python.python",
 		"ms-toolsai.jupyter",
 		"donjayamanne.python-extension-pack",
 		"ms-python.vscode-pylance",
+		"ms-vscode.cpptools",
+		"guyskk.language-cython"
 	],
 }

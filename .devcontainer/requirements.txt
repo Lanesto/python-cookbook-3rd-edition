@@ -13,3 +13,5 @@ mypy-ipython
 
 # Globally used libs
 numpy
+requests
+cython
