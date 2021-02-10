@@ -71,7 +71,7 @@ static PyObject *py_avg(PyObject *self, PyObject *args)
 
 static void del_Point(PyObject *obj)
 {
-    printf("deleting point\n");
+    PySys_WriteStdout("deleting point\n");
     free(PyCapsule_GetPointer(obj, "Point"));
 }
 
@@ -124,6 +124,137 @@ static PyObject *py_distance(PyObject *self, PyObject *args)
     return Py_BuildValue("d", result);
 }
 
+void print_chars(char *s)
+{
+    while (*s)
+    {
+        PySys_WriteStdout("%2x ", (unsigned char)*s);
+        s++;
+    }
+    PySys_WriteStdout("\n");
+}
+
+static PyObject *py_print_chars(PyObject *self, PyObject *args)
+{
+    char *s;
+    if (!PyArg_ParseTuple(args, "s", &s))
+    {
+        return NULL;
+    }
+    print_chars(s);
+    Py_RETURN_NONE;
+}
+
+void print_wchars(wchar_t *s, int len)
+{
+    int n = 0;
+    while (n < len)
+    {
+        PySys_WriteStdout("%x ", s[n]);
+        n++;
+    }
+    PySys_WriteStdout("\n");
+}
+
+static PyObject *py_print_wchars(PyObject *self, PyObject *args)
+{
+    wchar_t *s;
+    Py_ssize_t len;
+    if (!PyArg_ParseTuple(args, "u#", &s, &len))
+    {
+        return NULL;
+    }
+    print_wchars(s, len);
+    Py_RETURN_NONE;
+}
+
+static PyObject *py_get_filename(PyObject *self, PyObject *args)
+{
+    PyObject *bytes;
+    char *filename;
+    Py_ssize_t len;
+    if (!PyArg_ParseTuple(args, "O&", PyUnicode_FSConverter, &bytes))
+    {
+        return NULL;
+    }
+    PyBytes_AsStringAndSize(bytes, &filename, &len);
+    PySys_WriteStdout(filename);
+    Py_DECREF(bytes);
+    Py_RETURN_NONE;
+}
+
+#define CHUNK_SIZE 8192
+
+static PyObject *py_consume_file(PyObject *self, PyObject *args)
+{
+    PyObject *obj;
+    PyObject *read_meth;
+    PyObject *result = NULL;
+    PyObject *read_args;
+    if (!PyArg_ParseTuple(args, "O", &obj))
+    {
+        return NULL;
+    }
+    if ((read_meth = PyObject_GetAttrString(obj, "read")) == NULL)
+    {
+        return NULL;
+    }
+    read_args = Py_BuildValue("(i)", CHUNK_SIZE);
+    while (1)
+    {
+        PyObject *data;
+        PyObject *enc_data;
+        char *buf;
+        Py_ssize_t len;
+        if ((data = PyObject_Call(read_meth, read_args, NULL)) == NULL)
+        {
+            goto final;
+        }
+        if (PySequence_Length(data) == 0)
+        {
+            Py_DECREF(data);
+            break;
+        }
+        if ((enc_data = PyUnicode_AsEncodedString(data, "utf-8", "strict")) == NULL)
+        {
+            Py_DECREF(data);
+            goto final;
+        }
+        PyBytes_AsStringAndSize(enc_data, &buf, &len);
+        PySys_WriteStdout(buf);
+        // write(1, buf, len);
+        Py_DECREF(enc_data);
+        Py_DECREF(data);
+    }
+    result = Py_BuildValue("");
+final:
+    Py_DECREF(read_meth);
+    Py_DECREF(read_args);
+    return result;
+}
+
+static PyObject *py_consume_iterable(PyObject *self, PyObject *args)
+{
+    PyObject *obj;
+    PyObject *iter;
+    PyObject *item;
+    if (!PyArg_ParseTuple(args, "O", &obj))
+    {
+        return NULL;
+    }
+    if ((iter = PyObject_GetIter(obj)) == NULL)
+    {
+        return NULL;
+    }
+    while ((item = PyIter_Next(iter)) != NULL)
+    {
+        PySys_WriteStdout("got item\n");
+        Py_DECREF(item);
+    }
+    Py_DECREF(iter);
+    return Py_BuildValue("");
+}
+
 static PyMethodDef SampleMethods[] = {
     {"gcd", py_gcd, METH_VARARGS, "greatest common divisor"},
     {"avg", py_avg, METH_VARARGS, "average of iterable"},
@@ -131,6 +262,11 @@ static PyMethodDef SampleMethods[] = {
     {"divide", py_divide, METH_VARARGS, "integer division"},
     {"Point", py_Point, METH_VARARGS, "create a point"},
     {"distance", py_distance, METH_VARARGS, "distance between points"},
+    {"print_chars", py_print_chars, METH_VARARGS, "print each characters"},
+    {"print_wchars", py_print_wchars, METH_VARARGS, "print each characters"},
+    {"get_filename", py_get_filename, METH_VARARGS, "print python filename from C"},
+    {"consume_file", py_consume_file, METH_VARARGS, "consume file-like object"},
+    {"consume_iterable", py_consume_iterable, METH_VARARGS, "consume iterable"},
     {NULL, NULL, 0, NULL}};
 
 static struct PyModuleDef samplemodule = {
